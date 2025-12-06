@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.openapi.generator' version '7.2.0'
 }
 
 group = 'com.larlew'
@@ -23,6 +24,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -31,3 +35,26 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+openApiGenerate {
+	generatorName = 'spring'
+	inputSpec = "$rootDir/src/main/resources/api/UserApi.yaml"
+	outputDir = "$buildDir/generated"
+	apiPackage = 'com.larlew.api'
+	modelPackage = 'com.larlew.model'
+	configOptions = [
+		interfaceOnly: 'true',
+		useSpringBoot3: 'true',
+		delegatePattern: 'true'
+	]
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java', "$buildDir/generated/src/main/java"]
+		}
+	}
+}
+
+compileJava.dependsOn tasks.openApiGenerate
