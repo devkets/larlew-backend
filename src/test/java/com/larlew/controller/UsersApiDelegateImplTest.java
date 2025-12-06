@@ -474,7 +474,7 @@ public class UsersApiDelegateImplTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.email").value("test@example.com"))
-                .andExpect(jsonPath("$.firstName").isEmpty())
-                .andExpect(jsonPath("$.lastName").isEmpty());
+                .andExpect(jsonPath("$.firstName").value((String) null))
+                .andExpect(jsonPath("$.lastName").value((String) null));
     }
 }

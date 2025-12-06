@@ -31,7 +31,9 @@ public class ActuatorResiliencyTest {
     @WithMockUser
     void healthEndpointIsAccessible() throws Exception {
         // RESILIENCY ISSUE: Health endpoint returns 503 when LDAP is not available
-        // This indicates the application's health check is not resilient to optional dependencies
+        // The spring-boot-starter-data-ldap dependency causes the health check to fail
+        // when no LDAP server is configured or available. This indicates the application's
+        // health check is not resilient to optional dependencies.
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().is5xxServerError()); // Returns 503 when LDAP unavailable
     }
