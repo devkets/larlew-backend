@@ -20,7 +20,7 @@ public class MathController {
 		@Parameter(description = "First integer value", example = "5") @RequestParam int a,
 		@Parameter(description = "Second integer value", example = "10") @RequestParam int b
 	) {
-		System.out.println("Calculating sum of " + a + " and " + b);
+		System.out.println("MathController: Calculating sum of " + a + " and " + b);
 		return a + b;
 	}
 }
