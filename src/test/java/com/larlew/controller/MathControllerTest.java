@@ -27,4 +27,84 @@ public class MathControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("12"));
     }
+
+    // Resiliency Tests
+
+    @Test
+    void sumEndpointHandlesNegativeNumbers() throws Exception {
+        mockMvc.perform(get("/math/sum")
+                .param("a", "-10")
+                .param("b", "5"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("-5"));
+    }
+
+    @Test
+    void sumEndpointHandlesZero() throws Exception {
+        mockMvc.perform(get("/math/sum")
+                .param("a", "0")
+                .param("b", "0"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("0"));
+    }
+
+    @Test
+    void sumEndpointHandlesLargeNumbers() throws Exception {
+        mockMvc.perform(get("/math/sum")
+                .param("a", String.valueOf(Integer.MAX_VALUE))
+                .param("b", "0"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(Integer.MAX_VALUE)));
+    }
+
+    @Test
+    void sumEndpointHandlesOverflow() throws Exception {
+        // Test integer overflow behavior
+        mockMvc.perform(get("/math/sum")
+                .param("a", String.valueOf(Integer.MAX_VALUE))
+                .param("b", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(Integer.MIN_VALUE)));
+    }
+
+    @Test
+    void sumEndpointHandlesUnderflow() throws Exception {
+        // Test integer underflow behavior
+        mockMvc.perform(get("/math/sum")
+                .param("a", String.valueOf(Integer.MIN_VALUE))
+                .param("b", "-1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(Integer.MAX_VALUE)));
+    }
+
+    @Test
+    void sumEndpointRejectsMissingParameter() throws Exception {
+        mockMvc.perform(get("/math/sum")
+                .param("a", "5"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void sumEndpointRejectsInvalidNumberFormat() throws Exception {
+        mockMvc.perform(get("/math/sum")
+                .param("a", "invalid")
+                .param("b", "5"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void sumEndpointRejectsDecimalNumbers() throws Exception {
+        mockMvc.perform(get("/math/sum")
+                .param("a", "5.5")
+                .param("b", "10"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void sumEndpointRejectsEmptyParameters() throws Exception {
+        mockMvc.perform(get("/math/sum")
+                .param("a", "")
+                .param("b", "5"))
+                .andExpect(status().isBadRequest());
+    }
 }
